@@ -1,0 +1,5 @@
+# Local GitHub CLI authentication (never commit credentials)
+.local-gh-config/
+
+# Locally installed tools
+.tools/
