@@ -253,3 +253,197 @@ Hasil analisis kompetitor menunjukkan bahwa Google Calendar, Doodle, dan When2me
 
 1. Google Calendar Help. (2026). *Find times to meet in Google Calendar*.
 2. Doodle Help Center. (2026). *Group Poll: Scheduling Meetings with a Group*.
+
+---
+
+# Modul 2 — SDLC
+
+## 1. Metodologi Pengembangan
+
+Metodologi yang digunakan dalam pengembangan MeetPlan adalah **Agile**.
+
+Agile dipilih karena kebutuhan aplikasi dapat berubah berdasarkan hasil diskusi, evaluasi, dan masukan dari anggota kelompok. Pengembangan dilakukan secara iteratif melalui beberapa sprint sehingga setiap bagian sistem dapat dikembangkan, diuji, dan dievaluasi secara berkala.
+
+Pendekatan ini juga memungkinkan kelompok untuk memperoleh hasil pengembangan secara bertahap dan melakukan perbaikan sebelum keseluruhan sistem selesai.
+
+---
+
+# 2. Product Goal
+
+Tujuan utama MeetPlan adalah:
+
+> **Membangun aplikasi perencanaan acara kelompok yang membantu pengguna menentukan waktu, tempat, dan kegiatan secara efisien dengan mempertimbangkan ketersediaan dan preferensi seluruh anggota.**
+
+Secara lebih spesifik, MeetPlan bertujuan untuk:
+
+1. Mengurangi komunikasi yang tidak efisien dalam menentukan waktu acara.
+2. Membantu kelompok menemukan waktu yang sesuai berdasarkan ketersediaan anggota.
+3. Memfasilitasi pemilihan tempat dan kegiatan melalui polling.
+4. Memberikan ruang bagi anggota untuk menyampaikan keinginan membatalkan acara secara anonim.
+5. Menyediakan informasi acara yang telah disepakati dalam bentuk ringkasan.
+
+---
+
+# 3. Potential Users dan Kebutuhan
+
+| Potential User | Kebutuhan |
+|---|---|
+| Event Organizer | Membuat acara dan mengatur proses perencanaan |
+| Event Organizer | Mengundang anggota ke dalam acara |
+| Event Organizer | Membuat polling tempat atau kegiatan |
+| Event Organizer | Melihat hasil polling |
+| Event Organizer | Melakukan finalisasi acara |
+| Member | Melihat acara yang diikuti |
+| Member | Mengisi ketersediaan |
+| Member | Menentukan status ketersediaan |
+| Member | Melihat kandidat waktu |
+| Member | Memberikan suara pada polling |
+| Member | Mengajukan "Pengen Cancel" secara anonim |
+| Member | Melihat ringkasan acara |
+
+---
+
+# 4. Use Case Diagram
+
+Use Case Diagram MeetPlan menggambarkan interaksi antara dua aktor utama, yaitu **Member** dan **Event Organizer**.
+
+![Use Case Diagram](images/Use_Case.png)
+
+### Aktor
+
+**Member**
+
+Member dapat:
+
+- Login / Register.
+- Melihat acara.
+- Mengisi ketersediaan.
+- Menentukan status ketersediaan.
+- Melihat kandidat waktu.
+- Vote tempat atau kegiatan.
+- Mengajukan "Pengen Cancel".
+- Melihat ringkasan acara.
+
+**Event Organizer**
+
+Event Organizer merupakan turunan dari Member dan memiliki seluruh kemampuan Member, ditambah kemampuan:
+
+- Membuat acara.
+- Mengundang member.
+- Membuat polling.
+- Melihat hasil polling.
+- Melakukan finalisasi acara.
+
+---
+
+# 5. Functional Requirements
+
+| ID | Functional Requirement | Deskripsi |
+|---|---|---|
+| FR-01 | Login | Sistem memungkinkan pengguna melakukan login. |
+| FR-02 | Register | Sistem memungkinkan pengguna membuat akun. |
+| FR-03 | Melihat acara | Pengguna dapat melihat daftar acara yang diikuti. |
+| FR-04 | Membuat acara | Event Organizer dapat membuat acara baru. |
+| FR-05 | Mengundang member | Event Organizer dapat mengundang pengguna untuk bergabung ke acara. |
+| FR-06 | Mengisi ketersediaan | Member dapat memasukkan waktu ketersediaannya. |
+| FR-07 | Menentukan status | Member dapat menentukan status ketersediaannya. |
+| FR-08 | Menentukan kandidat waktu | Sistem dapat menghasilkan kandidat waktu berdasarkan ketersediaan. |
+| FR-09 | Melihat kandidat waktu | Member dapat melihat kandidat waktu yang tersedia. |
+| FR-10 | Membuat polling | Event Organizer dapat membuat polling tempat atau kegiatan. |
+| FR-11 | Vote polling | Member dapat memberikan suara pada pilihan polling. |
+| FR-12 | Melihat hasil polling | Event Organizer dapat melihat hasil polling. |
+| FR-13 | Mengajukan "Pengen Cancel" | Member dapat mengajukan keinginan untuk membatalkan acara secara anonim. |
+| FR-14 | Memproses pembatalan | Sistem dapat menentukan apakah acara perlu dibatalkan berdasarkan pilihan anggota. |
+| FR-15 | Finalisasi acara | Event Organizer dapat menetapkan hasil akhir acara. |
+| FR-16 | Melihat ringkasan | Member dapat melihat informasi akhir acara. |
+
+---
+
+# 6. Entity Relationship Diagram
+
+ERD digunakan untuk menggambarkan struktur data dan hubungan antarentitas yang dibutuhkan oleh MeetPlan.
+
+![Entity Relationship Diagram](images/ERD_MeetPlan.png)
+
+### Entitas Utama
+
+- **USER** — menyimpan informasi pengguna.
+- **EVENT** — menyimpan informasi acara.
+- **EVENT_MEMBER** — menghubungkan user dengan event.
+- **AVAILABILITY** — menyimpan ketersediaan anggota.
+- **TIME_CANDIDATE** — menyimpan kandidat waktu.
+- **POLL** — menyimpan informasi polling.
+- **POLL_OPTION** — menyimpan pilihan pada polling.
+- **VOTE** — menyimpan suara pengguna.
+- **CANCEL_REQUEST** — menyimpan permintaan pembatalan acara.
+
+### Relasi Utama
+
+- Satu user dapat menjadi organizer dari banyak event.
+- Satu event memiliki satu organizer.
+- Satu user dapat mengikuti banyak event.
+- Satu event dapat memiliki banyak member.
+- Satu event dapat memiliki banyak data availability.
+- Satu event dapat memiliki banyak kandidat waktu.
+- Satu event dapat memiliki banyak polling.
+- Satu polling memiliki banyak pilihan.
+- Satu pilihan polling dapat menerima banyak vote.
+- Satu event dapat memiliki banyak cancel request.
+
+---
+
+# 7. Low-Fidelity Wireframe
+
+Low-fidelity wireframe dibuat untuk menggambarkan struktur dan alur antarmuka MeetPlan sebelum masuk ke tahap desain visual.
+
+Wireframe mencakup beberapa halaman utama:
+
+1. Login / Register
+   ![Login](images/Login.png)
+2. Dashboard
+   ![Dashboard](images/Dashboard.png)
+3. My Events
+   ![MyEvents](images/My_Events.png)
+4. Event Overview
+   ![EventOverview](images/Event_Overview.png)
+5. Event Availability
+   ![EventAvailability](images/Event_Availability.png)
+6. Event Members
+    ![EventMembers](images/Event_Members.png)
+7. Event Settings
+    ![EventSettings](images/Event_Settings.png)
+
+---
+
+## 8. Gantt Chart
+
+Pengembangan MeetPlan menggunakan metodologi Agile yang dibagi menjadi tiga sprint. Setiap sprint mencakup proses planning, development, testing, review, dan retrospective.
+
+**Keterangan:** ■ = kegiatan dilakukan pada pertemuan tersebut.
+
+| Kegiatan / Sprint | P1 | P2 | P3 | P4 | P5 | P6 | P7 | P8 | P9 | P10 | P11 | P12 |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Sprint 1 – Foundation** | | | | | | | | | | | | |
+| Sprint Planning & Requirement | ■ | | | | | | | | | | |
+| Use Case & Functional Requirement | ■ | ■ | | | | | | | | | |
+| ERD & System Design | | ■ | ■ | | | | | | | | |
+| Low-Fidelity Wireframe | | ■ | ■ | | | | | | | | |
+| Prototype / Increment 1 | | | ■ | | | | | | | | |
+| Testing & Sprint Review 1 | | | | ■ | | | | | | | | |
+| **Sprint 2 – Core Features** | | | | | | | | | | | | |
+| Sprint Planning 2 | | | | ■ | | | | | | | |
+| Database & Backend Development | | | | | ■ | ■ | | | | | |
+| Availability & Time Candidate | | | | | ■ | ■ | ■ | | | | |
+| Polling & Voting | | | | | | ■ | ■ | | | | |
+| Integration & Testing | | | | | | | ■ | | | | |
+| Sprint Review & Retrospective 2 | | | | | | | | ■ | | | |
+| **Sprint 3 – Completion & Release** | | | | | | | | | | | | |
+| Sprint Planning 3 | | | | | | | | ■ | | | | |
+| Anonymous Cancel | | | | | | | | ■ | ■ | | | |
+| Event Finalization & Summary | | | | | | | | ■ | ■ | | | |
+| Frontend–Backend Integration | | | | | | | | | ■ | ■ | | |
+| System Testing & Bug Fixing | | | | | | | | | | ■ | ■ | |
+| Final Sprint Review & Retrospective | | | | | | | | | | | | ■ |
+| Deployment & Documentation | | | | | | | | | | | | ■ |
+
+---
