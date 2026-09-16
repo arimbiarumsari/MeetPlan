@@ -1,0 +1,35 @@
+name: Scheduler CI
+
+on:
+  push:
+    branches: ["544012"]
+    paths:
+      - "services/scheduler/**"
+      - ".github/workflows/scheduler-ci.yml"
+  pull_request:
+    paths:
+      - "services/scheduler/**"
+      - ".github/workflows/scheduler-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run scheduler unit tests
+        working-directory: services/scheduler
+        run: python -m unittest -v
+
+      - name: Build scheduler container
+        run: docker build -t meetplan-scheduler:${{ github.sha }} services/scheduler
