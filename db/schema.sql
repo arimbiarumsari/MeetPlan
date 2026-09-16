@@ -1,15 +1,9 @@
--- MeetPlan Database Schema
--- PostgreSQL
--- Diimplementasikan dari ERD hasil Worksheet Week 2 (Lab 2.4)
--- Issue #6: Merancang ERD dan skema basis data
+-- schema database MeetPlan, PostgreSQL
+-- implementasi dari ERD yang sudah disusun pada Week 2 (issue #6)
 
--- Ekstensi untuk generate UUID (opsional, bisa pakai SERIAL/INT biasa juga)
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto"; -- untuk gen_random_uuid()
 
--- =========================================================
--- USER
--- Menyimpan data akun pengguna (Member maupun Event Organizer)
--- =========================================================
+-- data akun pengguna
 CREATE TABLE users (
     user_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            VARCHAR(100) NOT NULL,
@@ -18,10 +12,7 @@ CREATE TABLE users (
     created_at      TIMESTAMP NOT NULL DEFAULT now()
 );
 
--- =========================================================
--- EVENT
--- Menyimpan data acara yang dibuat oleh Event Organizer
--- =========================================================
+-- acara yang dibuat oleh organizer
 CREATE TABLE events (
     event_id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     organizer_id    UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
@@ -36,10 +27,7 @@ CREATE TABLE events (
     created_at      TIMESTAMP NOT NULL DEFAULT now()
 );
 
--- =========================================================
--- EVENT_MEMBER
--- Relasi many-to-many antara USER dan EVENT (siapa ikut event apa)
--- =========================================================
+-- relasi user dan event, many-to-many
 CREATE TABLE event_members (
     event_id        UUID NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
     user_id         UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
@@ -49,11 +37,8 @@ CREATE TABLE event_members (
     PRIMARY KEY (event_id, user_id)
 );
 
--- =========================================================
--- AVAILABILITY
--- Jadwal tidak tersedia yang diinput tiap anggota per event
--- status: dikonsumsi langsung oleh scheduler (busy / available / tentative)
--- =========================================================
+-- jadwal ketersediaan tiap anggota per event
+-- kolom status di sini yang dipakai langsung oleh scheduler (busy/available/tentative)
 CREATE TABLE availability (
     availability_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_id        UUID NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
@@ -65,10 +50,7 @@ CREATE TABLE availability (
     CHECK (end_time > start_time)
 );
 
--- =========================================================
--- TIME_CANDIDATE
--- Kandidat waktu hasil perhitungan scheduler, dengan skor
--- =========================================================
+-- hasil kandidat waktu dari scheduler beserta skornya
 CREATE TABLE time_candidates (
     candidate_id    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_id        UUID NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
@@ -80,12 +62,9 @@ CREATE TABLE time_candidates (
     CHECK (end_time > start_time)
 );
 
--- =========================================================
--- CANCEL_REQUEST
--- Fitur "Pengen Cancel" anonim.
--- Identitas is_cancel per user TIDAK ditampilkan ke user lain di level aplikasi;
--- hanya agregat jumlah yang dibaca untuk menentukan status akhir event.
--- =========================================================
+-- fitur "Pengen Cancel" yang bersifat anonim
+-- nilai is_cancel per user tidak ditampilkan ke anggota lain, hanya dihitung
+-- jumlahnya untuk menentukan apakah event dibatalkan atau tetap berjalan
 CREATE TABLE cancel_requests (
     cancel_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_id        UUID NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
@@ -95,10 +74,7 @@ CREATE TABLE cancel_requests (
     UNIQUE (event_id, user_id)
 );
 
--- =========================================================
--- POLL
--- Polling tempat/kegiatan per event
--- =========================================================
+-- polling tempat atau kegiatan
 CREATE TABLE polls (
     poll_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     event_id        UUID NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
@@ -110,10 +86,7 @@ CREATE TABLE polls (
     created_at      TIMESTAMP NOT NULL DEFAULT now()
 );
 
--- =========================================================
--- POLL_OPTION
--- Pilihan-pilihan dalam satu poll
--- =========================================================
+-- pilihan-pilihan pada satu poll
 CREATE TABLE poll_options (
     option_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     poll_id         UUID NOT NULL REFERENCES polls(poll_id) ON DELETE CASCADE,
@@ -121,10 +94,7 @@ CREATE TABLE poll_options (
     description     TEXT
 );
 
--- =========================================================
--- VOTE
--- Suara tiap user terhadap satu poll_option
--- =========================================================
+-- suara user terhadap satu poll_option
 CREATE TABLE votes (
     vote_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     option_id       UUID NOT NULL REFERENCES poll_options(option_id) ON DELETE CASCADE,
@@ -133,9 +103,7 @@ CREATE TABLE votes (
     UNIQUE (option_id, user_id)
 );
 
--- =========================================================
--- INDEX tambahan untuk query yang sering dipakai
--- =========================================================
+-- index tambahan untuk query yang sering digunakan
 CREATE INDEX idx_availability_event ON availability(event_id);
 CREATE INDEX idx_time_candidates_event ON time_candidates(event_id);
 CREATE INDEX idx_cancel_requests_event ON cancel_requests(event_id);
