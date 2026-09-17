@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16
+    container_name: meetplan-db
+    restart: always
+    environment:
+      POSTGRES_USER: meetplan_user
+      POSTGRES_PASSWORD: meetplan_pass
+      POSTGRES_DB: meetplan
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
