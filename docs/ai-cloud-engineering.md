@@ -17,9 +17,13 @@ a learned ranking model after MeetPlan collects consented feedback data.
 
 ## Service interface
 
-- `GET /health` returns service health for cloud readiness checks.
+- `GET /health` returns a lightweight liveness response.
+- `GET /ready` runs a deterministic scheduler self-check for container and
+  orchestrator readiness probes.
 - `POST /recommend` accepts participant availability and returns ranked slots.
-- Invalid payloads return HTTP 400 with a JSON error.
+- Invalid payloads return HTTP 400 with a JSON error. Payload validation covers
+  structure, unique participant names, slot maps, and duplicate candidate
+  slots. Successful responses include a model version and request-level counts.
 
 Example request:
 

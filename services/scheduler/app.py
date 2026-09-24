@@ -6,7 +6,7 @@ import json
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from recommender import ParticipantAvailability, rank_meeting_slots
+from service import readiness_report, recommend_payload
 
 
 class SchedulerHandler(BaseHTTPRequestHandler):
@@ -24,6 +24,12 @@ class SchedulerHandler(BaseHTTPRequestHandler):
         if self.path == "/health":
             self._send_json(200, {"status": "ok", "service": "scheduler"})
             return
+        if self.path == "/ready":
+            try:
+                self._send_json(200, readiness_report())
+            except RuntimeError as error:
+                self._send_json(503, {"status": "not_ready", "error": str(error)})
+            return
         self._send_json(404, {"error": "not found"})
 
     def do_POST(self) -> None:  # noqa: N802 - required by BaseHTTPRequestHandler
@@ -34,18 +40,12 @@ class SchedulerHandler(BaseHTTPRequestHandler):
         try:
             length = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(length) or b"{}")
-            participants = [
-                ParticipantAvailability(name=item["name"], slots=item["slots"])
-                for item in payload["participants"]
-            ]
-            recommendations = rank_meeting_slots(
-                participants, payload.get("candidate_slots")
-            )
-        except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+            response = recommend_payload(payload)
+        except (TypeError, ValueError, json.JSONDecodeError) as error:
             self._send_json(400, {"error": str(error)})
             return
 
-        self._send_json(200, {"recommendations": recommendations})
+        self._send_json(200, response)
 
     def log_message(self, format: str, *args: object) -> None:
         return
