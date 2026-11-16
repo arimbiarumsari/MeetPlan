@@ -15,6 +15,13 @@ Each recommendation includes the normalized score and the participant names
 behind the explanation. This deterministic baseline can later be compared with
 a learned ranking model after MeetPlan collects consented feedback data.
 
+The scoring implementation uses object-oriented availability rules. The
+abstract `AvailabilityRule` base class is inherited by weighted and hard-
+constraint rules, while `evaluate()` is dispatched polymorphically. Rule state
+is encapsulated in private attributes, subclass configuration uses a protected
+attribute, and callers interact through public methods and read-only
+properties.
+
 ## Service interface
 
 - `GET /health` returns a lightweight liveness response.

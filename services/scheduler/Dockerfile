@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PORT=8080
 
 WORKDIR /app
-COPY app.py recommender.py service.py ./
+COPY app.py availability_rules.py recommender.py service.py ./
 
 USER 65532:65532
 EXPOSE 8080

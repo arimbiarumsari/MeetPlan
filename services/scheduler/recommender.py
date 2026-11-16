@@ -10,8 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, Mapping, Sequence
 
+from availability_rules import AvailabilityPolicy
+
 
 VALID_STATES = {"available", "tentative", "busy"}
+POLICY = AvailabilityPolicy()
 
 
 @dataclass(frozen=True)
@@ -54,8 +57,19 @@ def rank_meeting_slots(
 
     ranked: list[dict[str, object]] = []
     for slot in sorted(slots):
-        busy = [p.name for p in participants if p.slots.get(slot) == "busy"]
-        missing = [p.name for p in participants if slot not in p.slots]
+        evaluations = {
+            p.name: POLICY.evaluate(p.slots.get(slot)) for p in participants
+        }
+        busy = [
+            name
+            for name, result in evaluations.items()
+            if result.reason == "busy=hard constraint"
+        ]
+        missing = [
+            name
+            for name, result in evaluations.items()
+            if result.reason == "missing=unavailable"
+        ]
         if busy or missing:
             continue
 
@@ -65,7 +79,7 @@ def rank_meeting_slots(
         tentative = [
             p.name for p in participants if p.slots.get(slot) == "tentative"
         ]
-        raw_score = len(available) + (0.5 * len(tentative))
+        raw_score = sum(result.score for result in evaluations.values())
         normalized_score = raw_score / len(participants)
         ranked.append(
             {
